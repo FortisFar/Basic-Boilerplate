@@ -1,0 +1,16 @@
+{
+  "name": "FortisFar Boilerplate",
+  "version": "0.0.1",
+  "description": "The keystone for most FortisFar Ltd projects",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/FortisFar/svg-symbol-workflow"
+  },
+  "devDependencies": {
+    "del": "^3.0.0",
+    "gulp": "^4.0.0",
+    "gulp-file-include": "^2.0.1",
+    "gulp-sass": "^3.1.0",
+    "webpack-stream": "^4.0.1"
+  }
+}
