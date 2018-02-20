@@ -55,7 +55,7 @@ function sprite() {
 // Compile CSS & Autoprefix/PostCSS
 function styles() {
   return gulp.src(paths.styles.src)
-    .pipe(sass())
+    .pipe(sass().on('error', sass.logError))
     .pipe(autoprefixer({
       browsers: ['last 2 versions'],
       cascade: false
@@ -68,10 +68,30 @@ function styles() {
 function scripts() {
   return gulp.src(paths.scripts.entry)
     .pipe(webpack({
+      watch: false,
+      module: {
+        rules: [
+          {
+            loader: 'babel-loader',
+            query: {
+              presets: [
+                ["env", {
+                  "targets": {
+                    "browsers": ["last 2 versions", "safari >= 7"]
+                  }
+                }]
+              ]
+            }
+          }
+        ]
+      },
       output: {
         filename: 'bundle.js',
       }
     }))
+    .on('error', function handleError() {
+      this.emit('end'); // Recover from errors
+    })
     .pipe(gulp.dest(paths.scripts.dest));
 }
 
@@ -101,6 +121,7 @@ let develop = gulp.series(build, watch);
 // Production build task
 let deploy = gulp.series(build);
 
+// export the tasks to be ran through npm
 exports.build = build;
 exports.develop = develop;
 exports.deploy = deploy;

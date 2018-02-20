@@ -1,2 +1,15 @@
 
 @import 'base/reset';
+@import 'base/mixins';
+
+
+
+body {
+  @include between-breakpoints(0px, 800px) {
+    background-color: pink;
+  }
+}
+
+p {
+  color: blue;
+}
