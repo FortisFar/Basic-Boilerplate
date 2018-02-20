@@ -1,1 +1,3 @@
-A starter kit for using SVG sprites within your webapp, powered by Gulp.
+A basic frontend boilerplate, powered by Gulp v4.
+
+Uses Webpack and Babel for ES6 module bundling.
