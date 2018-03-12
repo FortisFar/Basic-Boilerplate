@@ -1,6 +1,8 @@
 const gulp = require('gulp');
 const html = require('gulp-file-include');
 const sass = require('gulp-sass');
+const sassLint = require('gulp-sass-lint');
+const sourcemaps  = require('gulp-sourcemaps');
 const autoprefixer = require('gulp-autoprefixer');
 const gulpif = require('gulp-if');
 const del = require('del');
@@ -38,8 +40,8 @@ const paths = new function() {
 // server/reload config
 // assignment occurs when required in the serve() task
 let server = false;
-const browserSync = undefined;
-const reload = undefined;
+let browserSync = undefined;
+let reload = undefined;
 
 
 
@@ -51,11 +53,6 @@ function clean() {
 
 
 function serve() {
-  // we only need browsersync if running "develop" task
-  browserSync = require ('browser-sync');
-  reload = browserSync.stream;
-  server = true;
-
   browserSync.init({
       server: {
           baseDir: paths.root
@@ -84,12 +81,16 @@ function sprite() {
 // Compile CSS & Autoprefix/PostCSS
 function styles() {
   return gulp.src(paths.styles.src)
+    .pipe(sourcemaps.init())
     .pipe(sass().on('error', sass.logError))
+    .pipe(sassLint())
+    .pipe(sassLint.failOnError())
     .pipe(autoprefixer({
       browsers: ['last 2 versions'],
       cascade: false
     }))
     .pipe(gulpif(server, reload()))
+    .pipe(sourcemaps.write())
     .pipe(gulp.dest(paths.styles.dest));
 }
 
@@ -135,7 +136,7 @@ function scripts() {
 
 
 // files for changes and run appropriate tasks accordingly
-function watch(cb) {
+function watch(done) {
   gulp.watch(paths.html.src, function() {
     return templates();
   });
@@ -152,20 +153,24 @@ function watch(cb) {
     return styles();
   });
 
-  cb();
+  done();
 }
 
+function configureServer(done) {
+  // we only need browsersync if running "develop" task
+  browserSync = require ('browser-sync');
+  reload = browserSync.stream;
+  server = true;
 
-
-
-
-
+  done();
+}
 
 // Standard dev build task
 let build = gulp.series(clean, gulp.parallel(templates, sprite, styles, scripts));
 
+
 // Production build task
-let develop = gulp.series(build, watch, serve);
+let develop = gulp.series(configureServer, build, watch, serve);
 
 // Production build task
 let deploy = gulp.series(build);
@@ -183,7 +188,6 @@ Things TODO
 
   - ES6 linting rules (AirBnB currently)
   - Sass linting
-  - Source Maps
   - SVG Sprites
   - Deployment Task
 
