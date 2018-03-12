@@ -5,40 +5,41 @@ const autoprefixer = require('gulp-autoprefixer');
 const gulpif = require('gulp-if');
 const del = require('del');
 const webpack = require('webpack-stream');
-const browserSync = require ('browser-sync');
 
 // paths config
 const paths = new function() {
-    this.root = 'www/';
-    this.src = this.root + 'src/';
-    this.build = this.root + 'build/';
-  
-    this.html = {
-      src: this.root + 'templates/**/*.html',
-      entry: this.root + 'templates/pages/*.html',
-      dest: this.root + 'html/'
-    }
-  
-    this.images = {
-      svg: this.root + 'images/svg/**.*.svg',
-      sprite: this.root + 'images/sprite/'
-    }
-  
-    this.styles = {
-      src: this.src + 'scss/**/*.scss',
-      dest: this.build + 'css/'
-    }
-  
-    this.scripts = {
-      entry: this.src + 'js/main.js',
-      src: this.src + 'js/**/*.js',
-      dest: this.build + 'js/'
-    }
+  this.root = 'www/';
+  this.src = this.root + 'src/';
+  this.build = this.root + 'build/';
+
+  this.html = {
+    src: this.root + 'templates/**/*.html',
+    entry: this.root + 'templates/pages/*.html',
+    dest: this.root + 'html/'
+  }
+
+  this.images = {
+    svg: this.root + 'images/svg/**.*.svg',
+    sprite: this.root + 'images/sprite/'
+  }
+
+  this.styles = {
+    src: this.src + 'scss/**/*.scss',
+    dest: this.build + 'css/'
+  }
+
+  this.scripts = {
+    entry: this.src + 'js/main.js',
+    src: this.src + 'js/**/*.js',
+    dest: this.build + 'js/'
+  }
 }();
 
 // server/reload config
+// assignment occurs when required in the serve() task
 let server = false;
-const reload = browserSync.stream;
+const browserSync = undefined;
+const reload = undefined;
 
 
 
@@ -50,6 +51,9 @@ function clean() {
 
 
 function serve() {
+  // we only need browsersync if running "develop" task
+  browserSync = require ('browser-sync');
+  reload = browserSync.stream;
   server = true;
 
   browserSync.init({
@@ -177,9 +181,10 @@ exports.deploy = deploy;
 Things TODO
 -----------
 
-  - ES6 linting
+  - ES6 linting rules (AirBnB currently)
   - Sass linting
   - Source Maps
   - SVG Sprites
+  - Deployment Task
 
 */
