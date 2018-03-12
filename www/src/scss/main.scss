@@ -8,8 +8,11 @@ body {
   @include between-breakpoints(0px, 800px) {
     background-color: pink;
   }
+  @include breakpoint(801px) {
+    background-color: greenyellow;
+  }
 }
 
 p {
-  color: blue;
+  color: inherit;
 }
