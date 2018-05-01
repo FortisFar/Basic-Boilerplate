@@ -1,0 +1,34 @@
+
+{
+  "rules": {
+    "block-no-empty": [true, {
+      "severity": "warning"
+    }],
+    "color-no-invalid-hex": true,
+    "function-calc-no-unspaced-operator": true,
+    "comment-empty-line-before": [ "always", {
+      "ignore": ["stylelint-commands", "after-comment"]
+    } ],
+    "declaration-colon-space-after": "always-single-line",
+    "declaration-block-no-duplicate-properties": [true, {
+      "ignore": ["consecutive-duplicates"]
+    }],
+    "max-empty-lines": 3,
+    "rule-empty-line-before": [ "always", {
+      "except": ["first-nested"],
+      "ignore": ["after-comment"]
+    } ],
+    "declaration-no-important": [true, {
+      "message": "Try and not use !important",
+      "severity": "warning"
+    }],
+    "selector-max-specificity": ["1,2,3", {
+      "message" : "Check specificity level. Avoid high specificity selectors like #",
+      "severity": "warning"
+    }],
+    "font-family-no-missing-generic-family-keyword": true,
+    "unit-no-unknown": true,
+    "property-no-unknown": true,
+    "selector-type-no-unknown" : true
+  }
+}

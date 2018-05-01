@@ -2,8 +2,6 @@
 @import 'base/reset';
 @import 'base/mixins';
 
-
-
 body {
   @include between-breakpoints(0px, 800px) {
     background-color: pink;
@@ -15,4 +13,14 @@ body {
 
 p {
   color: inherit;
+}
+
+div {}
+
+
+.car.dog.win.lose {
+  font-weight: bold;
+}
+
+#cat {
 }
