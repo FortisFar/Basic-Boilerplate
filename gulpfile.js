@@ -8,6 +8,8 @@ const styleLint = require('gulp-stylelint');
 const sourcemaps  = require('gulp-sourcemaps');
 const autoprefixer = require('gulp-autoprefixer');
 const svgSprite = require('gulp-svg-sprites');
+const uglify = require('gulp-uglify');
+const cssMin = require('gulp-cssmin');
 const gulpif = require('gulp-if');
 
 // paths config
@@ -41,9 +43,13 @@ const paths = new function() {
 
 // server/reload config
 // assignment occurs when required in the serve() task
+let deployBuild = false;
 let server = false;
 let browserSync = undefined;
-let reload = function() {};
+let reload = function() {
+  return true;
+};
+
 
 // Clean build folder & HTML templates
 // let clean = () => del([paths.build, paths.html.dest]);
@@ -87,11 +93,12 @@ function sprite() {
 
 
 // Compile CSS & Autoprefix/PostCSS
-const styles = function styles() {
+function styles() {
   return gulp.src(paths.styles.src)
     .pipe(sourcemaps.init())
     .pipe(sass().on('error', sass.logError))
     .pipe(styleLint({
+      failAfterError: false,
       reporters: [
         { formatter: 'string', console: true }
       ]
@@ -100,6 +107,7 @@ const styles = function styles() {
       browsers: ['last 2 versions'],
       cascade: false
     }))
+    .pipe(gulpif(deployBuild, cssMin()))
     .pipe(sourcemaps.write())
     .pipe(gulp.dest(paths.styles.dest))
     .pipe(gulpif(server, reload()));
@@ -110,7 +118,7 @@ const styles = function styles() {
 function scripts() {
   const webpackConfig = require('./webpack.config.js');
   webpackConfig.devtool = server ? 'source-map' : 'none';
-  
+
   return gulp.src(paths.scripts.entry)
     .pipe(webpack({
       config: webpackConfig
@@ -118,6 +126,7 @@ function scripts() {
     .on('error', function handleError() {
       this.emit('end'); // Recover from errors
     })
+    .pipe(gulpif(deployBuild, uglify()))
     .pipe(gulpif(server, reload()))
     .pipe(gulp.dest(paths.scripts.dest));
 }
@@ -142,6 +151,13 @@ function configureServer(done) {
   done();
 }
 
+function configureDeploy(done) {
+  // set some deploy vars
+  deployBuild = true;
+
+  done();
+}
+
 
 // Standard dev build task
 const build = gulp.series(clean, gulp.parallel(templates, sprite, styles, scripts));
@@ -150,7 +166,7 @@ const build = gulp.series(clean, gulp.parallel(templates, sprite, styles, script
 const develop = gulp.series(configureServer, build, watch, serve);
 
 // Production build task
-const deploy = gulp.series(build);
+const deploy = gulp.series(configureDeploy, build);
 
 
 // export the tasks to be ran through npm
@@ -164,9 +180,9 @@ exports.deploy = deploy;
 Things TODO
 -----------
 
-  - SVG Sprites
   - Deployment Task
   - Revise ES6 linting rules (AirBnB currently)
   - Revise Sass linting rules (Numiko currently)
+  - Webpack < 2% technique
 
 */
